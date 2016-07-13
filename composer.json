@@ -1,0 +1,23 @@
+{
+    "name": "topthink/think-image",
+    "description": "The ThinkPHP5 Image Package",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "yunwuxin",
+            "email": "448901948@qq.com"
+        }
+    ],
+    "require": {
+        "ext-gd": "*"
+    },
+    "require-dev": {
+        "topthink/framework": "dev-master",
+        "phpunit/phpunit": "^5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "think\\image\\": "src"
+        }
+    }
+}
