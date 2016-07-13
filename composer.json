@@ -13,7 +13,10 @@
     },
     "require-dev": {
         "topthink/framework": "dev-master",
-        "phpunit/phpunit": "3.*"
+        "phpunit/phpunit": "4.8.*"
+    },
+    "config": {
+        "preferred-install": "dist"
     },
     "autoload": {
         "psr-4": {
