@@ -10,8 +10,7 @@
 // +----------------------------------------------------------------------
 namespace tests;
 
-use think\image\Exception;
-use think\image\Image;
+use think\Image;
 
 class InfoTest extends TestCase
 {

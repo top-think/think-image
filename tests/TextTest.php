@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace tests;
 
-use think\image\Image;
+use think\Image;
 
 class TextTest extends TestCase
 {

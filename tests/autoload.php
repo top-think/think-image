@@ -12,4 +12,4 @@ define('TEST_PATH', __DIR__ . '/');
 // 加载框架基础文件
 require __DIR__ . '/../thinkphp/base.php';
 \think\Loader::addNamespace('tests', TEST_PATH);
-\think\Loader::addNamespace('think\\image', __DIR__ . '/../src/');
+\think\Loader::addNamespace('think', __DIR__ . '/../src/');

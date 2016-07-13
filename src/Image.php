@@ -9,9 +9,10 @@
 // | Author: yunwuxin <448901948@qq.com>
 // +----------------------------------------------------------------------
 
-namespace think\image;
+namespace think;
 
 use think\image\gif\Gif;
+use think\image\Exception as ImageException;
 
 class Image
 {
@@ -58,7 +59,7 @@ class Image
 
         //检测图像合法性
         if (false === $info || (IMAGETYPE_GIF === $info[2] && empty($info['bits']))) {
-            throw new Exception('Illegal image file');
+            throw new ImageException('Illegal image file');
         }
 
         //设置图像信息
@@ -79,7 +80,7 @@ class Image
         }
 
         if (empty($this->im)) {
-            throw new Exception('Failed to create image resources!');
+            throw new ImageException('Failed to create image resources!');
         }
 
     }
@@ -95,7 +96,7 @@ class Image
             $file = new \SplFileInfo($file);
         }
         if (!$file->isFile()) {
-            throw new Exception('image file not exist');
+            throw new ImageException('image file not exist');
         }
         return new self($file);
     }
@@ -301,7 +302,7 @@ class Image
                 $x = $y = 0;
                 break;
             default:
-                throw new Exception('不支持的缩略图裁剪类型');
+                throw new ImageException('不支持的缩略图裁剪类型');
         }
         /* 裁剪图像 */
         $this->crop($w, $h, $x, $y, $width, $height);
@@ -319,12 +320,12 @@ class Image
     public function water($source, $locate = self::WATER_SOUTHEAST)
     {
         if (!is_file($source)) {
-            throw new Exception('水印图像不存在');
+            throw new ImageException('水印图像不存在');
         }
         //获取水印图像信息
         $info = getimagesize($source);
         if (false === $info || (IMAGETYPE_GIF === $info[2] && empty($info['bits']))) {
-            throw new Exception('非法水印文件');
+            throw new ImageException('非法水印文件');
         }
         //创建水印图像资源
         $fun   = 'imagecreatefrom' . image_type_to_extension($info[2], false);
@@ -382,7 +383,7 @@ class Image
                 if (is_array($locate)) {
                     list($x, $y) = $locate;
                 } else {
-                    throw new Exception('不支持的水印位置类型');
+                    throw new ImageException('不支持的水印位置类型');
                 }
         }
         do {
@@ -414,14 +415,14 @@ class Image
      * @param  integer $angle  文字倾斜角度
      *
      * @return $this
-     * @throws Exception
+     * @throws ImageException
      */
     public function text($text, $font, $size, $color = '#00000000',
                          $locate = self::WATER_SOUTHEAST, $offset = 0, $angle = 0)
     {
 
         if (!is_file($font)) {
-            throw new Exception("不存在的字体文件：{$font}");
+            throw new ImageException("不存在的字体文件：{$font}");
         }
         //获取文字信息
         $info = imagettfbbox($size, $angle, $font, $text);
@@ -483,7 +484,7 @@ class Image
                     $x += $posx;
                     $y += $posy;
                 } else {
-                    throw new Exception('不支持的文字位置类型');
+                    throw new ImageException('不支持的文字位置类型');
                 }
         }
         /* 设置偏移量 */
@@ -502,7 +503,7 @@ class Image
                 $color[3] = 0;
             }
         } elseif (!is_array($color)) {
-            throw new Exception('错误的颜色值');
+            throw new ImageException('错误的颜色值');
         }
         do {
             /* 写入文字 */
