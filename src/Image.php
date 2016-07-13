@@ -315,9 +315,10 @@ class Image
      *
      * @param  string $source 水印图片路径
      * @param int     $locate 水印位置
+     * @param int     $alpha  透明度
      * @return $this
      */
-    public function water($source, $locate = self::WATER_SOUTHEAST)
+    public function water($source, $locate = self::WATER_SOUTHEAST, $alpha = 100)
     {
         if (!is_file($source)) {
             throw new ImageException('水印图像不存在');
@@ -394,7 +395,7 @@ class Image
             imagefill($src, 0, 0, $color);
             imagecopy($src, $this->im, 0, 0, $x, $y, $info[0], $info[1]);
             imagecopy($src, $water, 0, 0, 0, 0, $info[0], $info[1]);
-            imagecopymerge($this->im, $src, $x, $y, 0, 0, $info[0], $info[1], 100);
+            imagecopymerge($this->im, $src, $x, $y, 0, 0, $info[0], $info[1], $alpha);
             //销毁零时图片资源
             imagedestroy($src);
         } while (!empty($this->gif) && $this->gifNext());
