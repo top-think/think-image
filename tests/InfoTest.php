@@ -18,13 +18,13 @@ class InfoTest extends TestCase
 
     public function testOpen()
     {
-        $this->setExpectedException(Exception::class);
+        $this->setExpectedException("\\think\\image\\Exception");
         Image::open('');
     }
 
     public function testIllegal()
     {
-        $this->setExpectedException(Exception::class, 'Illegal image file');
+        $this->setExpectedException("\\think\\image\\Exception", 'Illegal image file');
         Image::open(TEST_PATH . 'images/test.bmp');
     }
 
