@@ -103,11 +103,13 @@ class Image
 
     /**
      * 保存图像
-     * @param string      $pathname 图像保存路径名称
-     * @param null|string $type     图像类型
+     * @param string      $pathname  图像保存路径名称
+     * @param null|string $type      图像类型
+     * @param int         $quality   图像质量
+     * @param bool        $interlace 是否对JPEG类型图像设置隔行扫描
      * @return \SplFileInfo
      */
-    public function save($pathname, $type = null)
+    public function save($pathname, $type = null, $quality = 80, $interlace = true)
     {
         //自动获取图像类型
         if (is_null($type)) {
@@ -115,16 +117,20 @@ class Image
         } else {
             $type = strtolower($type);
         }
-        //JPEG图像设置隔行扫描
-        if ('jpeg' == $type || 'jpg' == $type) {
-            $type = 'jpeg';
-            imageinterlace($this->im, 1);
-        }
         //保存图像
-        if ('gif' == $type && !empty($this->gif)) {
+        if ('jpeg' == $type || 'jpg' == $type) {
+            //JPEG图像设置隔行扫描
+            imageinterlace($this->im, $interlace);
+            imagejpeg($this->im, $pathname, $quality);
+        } elseif ('gif' == $type && !empty($this->gif)) {
             $this->gif->save($pathname);
+        } elseif ('png' == $type) {
+            //设定保存完整的 alpha 通道信息
+            imagesavealpha($this->im, true);
+            //ImagePNG生成图像的质量范围从0到9的
+            imagepng($this->im, $pathname, (int)($quality / 10));
         } else {
-            $fun = "image{$type}";
+            $fun = 'image' . $type;
             $fun($this->im, $pathname);
         }
 
@@ -137,7 +143,7 @@ class Image
      */
     public function width()
     {
-        return (int)$this->info['width'];
+        return $this->info['width'];
     }
 
     /**
@@ -146,7 +152,7 @@ class Image
      */
     public function height()
     {
-        return (int)$this->info['height'];
+        return $this->info['height'];
     }
 
     /**
@@ -173,7 +179,7 @@ class Image
      */
     public function size()
     {
-        return [(int)$this->info['width'], (int)$this->info['height']];
+        return [$this->info['width'], $this->info['height']];
     }
 
     /**
@@ -205,8 +211,8 @@ class Image
             //设置新图像
             $this->im = $img;
         } while (!empty($this->gif) && $this->gifNext());
-        $this->info['width']  = $width;
-        $this->info['height'] = $height;
+        $this->info['width']  = (int)$width;
+        $this->info['height'] = (int)$height;
         return $this;
     }
 
@@ -294,8 +300,8 @@ class Image
                     imagedestroy($this->im); //销毁原图
                     $this->im = $img;
                 } while (!empty($this->gif) && $this->gifNext());
-                $this->info['width']  = $width;
-                $this->info['height'] = $height;
+                $this->info['width']  = (int)$width;
+                $this->info['height'] = (int)$height;
                 return $this;
             /* 固定 */
             case self::THUMB_FIXED:
