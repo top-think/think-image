@@ -20,8 +20,6 @@ class RotateTest extends TestCase
         $image    = Image::open($this->getJpeg());
         $image->rotate(90)->save($pathname);
 
-        $this->assertEquals(800, $image->height());
-
         $file = new \SplFileInfo($pathname);
 
         $this->assertTrue($file->isFile());
