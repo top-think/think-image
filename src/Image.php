@@ -34,6 +34,10 @@ class Image
     const WATER_SOUTHWEST = 7; //常量，标识左下角水印
     const WATER_SOUTH     = 8; //常量，标识下居中水印
     const WATER_SOUTHEAST = 9; //常量，标识右下角水印
+    /* 翻转相关常量定义 */
+    const FLIP_X = 1; //X轴翻转
+    const FLIP_Y = 2; //Y轴翻转
+
 
     /**
      * 图像资源对象
@@ -180,6 +184,63 @@ class Image
     public function size()
     {
         return [$this->info['width'], $this->info['height']];
+    }
+
+    /**
+     * 旋转图像
+     * @param int $degrees 顺时针旋转的度数
+     * @return $this
+     */
+    public function rotate($degrees = 90)
+    {
+        do {
+            $img = imagerotate($this->im, -$degrees, imagecolorallocatealpha($this->im, 0, 0, 0, 127));
+            imagedestroy($this->im);
+            $this->im = $img;
+        } while (!empty($this->gif) && $this->gifNext());
+
+        $this->info['width']  = imagesx($this->im);
+        $this->info['height'] = imagesy($this->im);
+
+        return $this;
+    }
+
+    /**
+     * 翻转图像
+     * @param integer $direction 翻转轴,X或者Y
+     * @return $this
+     */
+    public function flip($direction = self::FLIP_X)
+    {
+        //原图宽度和高度
+        $w = $this->info['width'];
+        $h = $this->info['height'];
+
+        do {
+
+            $img = imagecreatetruecolor($w, $h);
+
+            switch ($direction) {
+                case self::FLIP_X:
+                    for ($y = 0; $y < $h; $y++) {
+                        imagecopy($img, $this->im, 0, $h - $y - 1, 0, $y, $w, 1);
+                    }
+                    break;
+                case self::FLIP_Y:
+                    for ($x = 0; $x < $w; $x++) {
+                        imagecopy($img, $this->im, $w - $x - 1, 0, $x, 0, 1, $h);
+                    }
+                    break;
+                default:
+                    throw new ImageException('不支持的翻转类型');
+            }
+
+            imagedestroy($this->im);
+            $this->im = $img;
+
+        } while (!empty($this->gif) && $this->gifNext());
+
+        return $this;
     }
 
     /**
@@ -532,9 +593,11 @@ class Image
         $this->gif->image($img);
         $next = $this->gif->nextImage();
         if ($next) {
+            imagedestroy($this->im);
             $this->im = imagecreatefromstring($next);
             return $next;
         } else {
+            imagedestroy($this->im);
             $this->im = imagecreatefromstring($this->gif->image());
             return false;
         }
