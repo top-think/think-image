@@ -377,9 +377,9 @@ class Image
     /**
      * 添加水印
      *
-     * @param  string $source 水印图片路径
-     * @param int     $locate 水印位置
-     * @param int     $alpha  透明度
+     * @param string    $source 水印图片路径
+     * @param int|array $locate 水印位置
+     * @param int       $alpha  透明度
      * @return $this
      */
     public function water($source, $locate = self::WATER_SOUTHEAST, $alpha = 100)
@@ -471,13 +471,13 @@ class Image
     /**
      * 图像添加文字
      *
-     * @param  string  $text   添加的文字
-     * @param  string  $font   字体路径
-     * @param  integer $size   字号
-     * @param  string  $color  文字颜色
-     * @param int      $locate 文字写入位置
-     * @param  integer $offset 文字相对当前位置的偏移量
-     * @param  integer $angle  文字倾斜角度
+     * @param string    $text   添加的文字
+     * @param string    $font   字体路径
+     * @param integer   $size   字号
+     * @param string    $color  文字颜色
+     * @param int|array $locate 文字写入位置
+     * @param integer   $offset 文字相对当前位置的偏移量
+     * @param integer   $angle  文字倾斜角度
      *
      * @return $this
      * @throws ImageException
