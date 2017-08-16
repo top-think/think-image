@@ -460,7 +460,7 @@ class Image
             imagecopy($src, $this->im, 0, 0, $x, $y, $info[0], $info[1]);
             imagecopy($src, $water, 0, 0, 0, 0, $info[0], $info[1]);
             imagecopymerge($this->im, $src, $x, $y, 0, 0, $info[0], $info[1], $alpha);
-            //销毁零时图片资源
+            //销毁临时图片资源
             imagedestroy($src);
         } while (!empty($this->gif) && $this->gifNext());
         //销毁水印资源
