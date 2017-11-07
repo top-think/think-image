@@ -559,6 +559,20 @@ class Image
             $offset = intval($offset);
             $ox     = $oy     = $offset;
         }
+        /* 图片黑白检测 */
+        if ($color == "auto") {
+            $pickX = mb_strlen($text) * intval($size * 5 / 4);  //X方向采集宽度:文字个数*(字体尺寸+字间距(1/4字体宽度))
+            $pickY = $size + 5; //Y方向采集宽度
+
+            $brightness = 0;
+            for ($i = $x + $ox; $i < $pickX + $x + $ox; $i++) { //根据文字基线确定要进行遍历的像素
+                for ($j = $y + $oy - $pickY; $j < $y + $oy; $j++) { //基线修正
+                    $brightness += self::getBrightnessOfPixel($i, $j);
+                }
+            }
+
+            $color = $brightness / ($pickX * $pickY) > 127 ? '#00000000' : '#ffffffff';
+        }
         /* 设置颜色 */
         if (is_string($color) && 0 === strpos($color, '#')) {
             $color = str_split(substr($color, 1), 2);
@@ -575,6 +589,22 @@ class Image
             imagettftext($this->im, $size, $angle, $x + $ox, $y + $oy, $col, $font, $text);
         } while (!empty($this->gif) && $this->gifNext());
         return $this;
+    }
+
+    /**
+     * 获取图片指定像素点的亮度值
+     */
+    private function getBrightnessOfPixel($x, $y)
+    {
+        $rgb = imagecolorat($this->im, $x, $y);
+        $r = ($rgb >> 16) & 0xFF;
+        $g = ($rgb >> 8) & 0xFF;
+        $b = $rgb & 0xFF;
+
+        //红绿蓝能量不同，亮度不同，对应系数也不同（参考https://www.w3.org/TR/AERT/#color-contrast）
+        $brightness = intval($r * 0.299 + $g * 0.587 + $b * 0.114);
+
+        return $brightness;
     }
 
     /**
