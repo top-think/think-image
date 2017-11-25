@@ -561,8 +561,10 @@ class Image
         }
         /* 图片黑白检测 */
         if ($color == "auto") {
-            $pickX = mb_strlen($text) * intval($size * 5 / 4);  //X方向采集宽度:文字个数*(字体尺寸+字间距(1/4字体宽度))
-            $pickY = $size + 5; //Y方向采集宽度
+            //X方向采集宽度：单英文字符占据宽度约为字体大小/1.6，单中文字符占据宽度约为字体大小*4/3；Y方向采集宽度：英文字符高度约为字体大小，中文会高一些。
+            //使用保守宽度，以免在纯英文情况下采集区域超出图像范围，并且精度完全可以满足本功能。
+            $pickX = intval(mb_strwidth($text) * ($size / 1.6));
+            $pickY = $size;
 
             $brightness = 0;
             for ($i = $x + $ox; $i < $pickX + $x + $ox; $i++) { //根据文字基线确定要进行遍历的像素
