@@ -141,6 +141,32 @@ class Image
     }
 
     /**
+     * http输出图片
+     * @return void
+     */
+    public function output()
+    {
+        $type =$this->info['type'] ;
+        header("content-type: image/{$type}");
+        switch ($type)
+        {
+            case 'png':
+                imagepng($this->im);
+                break;
+            case 'gif':
+                imagegif($this->im);
+                break;
+            case 'jpeg':
+                imagejpeg($this->im);
+                break;
+            case 'wbmp':
+                imagewbmp($this->im);
+                break;
+        }
+        exit;
+    }
+
+    /**
      * 返回图像宽度
      * @return int 图像宽度
      */
