@@ -245,12 +245,12 @@ class Image
     /**
      * 裁剪图像
      *
-     * @param  integer $w      裁剪区域宽度
-     * @param  integer $h      裁剪区域高度
-     * @param  integer $x      裁剪区域x坐标
-     * @param  integer $y      裁剪区域y坐标
-     * @param  integer $width  图像保存宽度
-     * @param  integer $height 图像保存高度
+     * @param integer $w      裁剪区域宽度
+     * @param integer $h      裁剪区域高度
+     * @param integer $x      裁剪区域x坐标
+     * @param integer $y      裁剪区域y坐标
+     * @param integer $width  图像保存宽度
+     * @param integer $height 图像保存高度
      *
      * @return $this
      */
@@ -279,9 +279,9 @@ class Image
     /**
      * 生成缩略图
      *
-     * @param  integer $width  缩略图最大宽度
-     * @param  integer $height 缩略图最大高度
-     * @param int      $type   缩略图裁剪类型
+     * @param integer $width  缩略图最大宽度
+     * @param integer $height 缩略图最大高度
+     * @param int     $type   缩略图裁剪类型
      *
      * @return $this
      */
