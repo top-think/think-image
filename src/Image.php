@@ -141,6 +141,15 @@ class Image
     }
 
     /**
+     * 获取到image资源
+     * @return resource
+     */
+    public function getIm()
+    {
+        return $this->im;
+    }
+
+    /**
      * 返回图像宽度
      * @return int 图像宽度
      */
@@ -380,9 +389,10 @@ class Image
      * @param string    $source 水印图片路径,或者string格式的图片字符串
      * @param int|array $locate 水印位置
      * @param int       $alpha  透明度
+     * @param int|array $offset 偏移量
      * @return $this
      */
-    public function water($source, $locate = self::WATER_SOUTHEAST, $alpha = 100)
+    public function water($source, $locate = self::WATER_SOUTHEAST, $alpha = 100, $offset = 0)
     {
         if(strlen($source) < 200){
             if (!is_file($source)) {
@@ -459,15 +469,24 @@ class Image
                     throw new ImageException('不支持的水印位置类型');
                 }
         }
+
+        /* 设置偏移量 */
+        if (is_array($offset)) {
+            $offset        = array_map('intval', $offset);
+            list($ox, $oy) = $offset;
+        } else {
+            $offset = intval($offset);
+            $ox     = $oy     = $offset;
+        }
         do {
             //添加水印
             $src = imagecreatetruecolor($info[0], $info[1]);
             // 调整默认颜色
             $color = imagecolorallocate($src, 255, 255, 255);
             imagefill($src, 0, 0, $color);
-            imagecopy($src, $this->im, 0, 0, $x, $y, $info[0], $info[1]);
+            imagecopy($src, $this->im, 0, 0, $x + $ox, $y + $oy, $info[0], $info[1]);
             imagecopy($src, $water, 0, 0, 0, 0, $info[0], $info[1]);
-            imagecopymerge($this->im, $src, $x, $y, 0, 0, $info[0], $info[1], $alpha);
+            imagecopymerge($this->im, $src, $x + $ox, $y + $oy, 0, 0, $info[0], $info[1], $alpha);
             //销毁临时图片资源
             imagedestroy($src);
         } while (!empty($this->gif) && $this->gifNext());
