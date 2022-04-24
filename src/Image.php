@@ -141,6 +141,15 @@ class Image
     }
 
     /**
+     * 获取到image资源
+     * @return resource
+     */
+    public function getIm()
+    {
+        return $this->im;
+    }
+
+    /**
      * 返回图像宽度
      * @return int 图像宽度
      */
@@ -377,24 +386,33 @@ class Image
     /**
      * 添加水印
      *
-     * @param string    $source 水印图片路径
+     * @param string    $source 水印图片路径,或者string格式的图片字符串
      * @param int|array $locate 水印位置
      * @param int       $alpha  透明度
+     * @param int|array $offset 偏移量
      * @return $this
      */
-    public function water($source, $locate = self::WATER_SOUTHEAST, $alpha = 100)
+    public function water($source, $locate = self::WATER_SOUTHEAST, $alpha = 100, $offset = 0)
     {
-        if (!is_file($source)) {
-            throw new ImageException('水印图像不存在');
+        if(strlen($source) < 200){
+            if (!is_file($source)) {
+                throw new ImageException('水印图像不存在');
+            }
+            //获取水印图像信息
+            $info = getimagesize($source);
+            if (false === $info || (IMAGETYPE_GIF === $info[2] && empty($info['bits']))) {
+                throw new ImageException('非法水印文件');
+            }
+            //创建水印图像资源
+            $fun   = 'imagecreatefrom' . image_type_to_extension($info[2], false);
+            $water = $fun($source);
+        }else{
+            $water = imagecreatefromstring($source);
+            $info = [
+                imagesx($water),
+                imagesy($water),
+            ];
         }
-        //获取水印图像信息
-        $info = getimagesize($source);
-        if (false === $info || (IMAGETYPE_GIF === $info[2] && empty($info['bits']))) {
-            throw new ImageException('非法水印文件');
-        }
-        //创建水印图像资源
-        $fun   = 'imagecreatefrom' . image_type_to_extension($info[2], false);
-        $water = $fun($source);
         //设定水印图像的混色模式
         imagealphablending($water, true);
         /* 设定水印位置 */
@@ -451,15 +469,24 @@ class Image
                     throw new ImageException('不支持的水印位置类型');
                 }
         }
+
+        /* 设置偏移量 */
+        if (is_array($offset)) {
+            $offset        = array_map('intval', $offset);
+            list($ox, $oy) = $offset;
+        } else {
+            $offset = intval($offset);
+            $ox     = $oy     = $offset;
+        }
         do {
             //添加水印
             $src = imagecreatetruecolor($info[0], $info[1]);
             // 调整默认颜色
             $color = imagecolorallocate($src, 255, 255, 255);
             imagefill($src, 0, 0, $color);
-            imagecopy($src, $this->im, 0, 0, $x, $y, $info[0], $info[1]);
+            imagecopy($src, $this->im, 0, 0, $x + $ox, $y + $oy, $info[0], $info[1]);
             imagecopy($src, $water, 0, 0, 0, 0, $info[0], $info[1]);
-            imagecopymerge($this->im, $src, $x, $y, 0, 0, $info[0], $info[1], $alpha);
+            imagecopymerge($this->im, $src, $x + $ox, $y + $oy, 0, 0, $info[0], $info[1], $alpha);
             //销毁临时图片资源
             imagedestroy($src);
         } while (!empty($this->gif) && $this->gifNext());
@@ -545,8 +572,16 @@ class Image
                 /* 自定义文字坐标 */
                 if (is_array($locate)) {
                     list($posx, $posy) = $locate;
-                    $x += $posx;
-                    $y += $posy;
+                    if('middle' == $posx){
+                        $x += ($this->info['width'] - $w) / 2;
+                    }else{
+                        $x += $posx;
+                    }
+                    if('middle' == $posy){
+                        $y += ($this->info['height'] - $h) / 2;
+                    }else{
+                        $y += $posy;
+                    }
                 } else {
                     throw new ImageException('不支持的文字位置类型');
                 }
