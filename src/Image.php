@@ -553,8 +553,16 @@ class Image
                 /* 自定义文字坐标 */
                 if (is_array($locate)) {
                     list($posx, $posy) = $locate;
-                    $x += $posx;
-                    $y += $posy;
+                    if('middle' == $posx){
+                        $x += ($this->info['width'] - $w) / 2;
+                    }else{
+                        $x += $posx;
+                    }
+                    if('middle' == $posy){
+                        $y += ($this->info['height'] - $h) / 2;
+                    }else{
+                        $y += $posy;
+                    }
                 } else {
                     throw new ImageException('不支持的文字位置类型');
                 }
