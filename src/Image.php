@@ -377,24 +377,32 @@ class Image
     /**
      * 添加水印
      *
-     * @param string    $source 水印图片路径
+     * @param string    $source 水印图片路径,或者string格式的图片字符串
      * @param int|array $locate 水印位置
      * @param int       $alpha  透明度
      * @return $this
      */
     public function water($source, $locate = self::WATER_SOUTHEAST, $alpha = 100)
     {
-        if (!is_file($source)) {
-            throw new ImageException('水印图像不存在');
+        if(strlen($source) < 200){
+            if (!is_file($source)) {
+                throw new ImageException('水印图像不存在');
+            }
+            //获取水印图像信息
+            $info = getimagesize($source);
+            if (false === $info || (IMAGETYPE_GIF === $info[2] && empty($info['bits']))) {
+                throw new ImageException('非法水印文件');
+            }
+            //创建水印图像资源
+            $fun   = 'imagecreatefrom' . image_type_to_extension($info[2], false);
+            $water = $fun($source);
+        }else{
+            $water = imagecreatefromstring($source);
+            $info = [
+                imagesx($water),
+                imagesy($water),
+            ];
         }
-        //获取水印图像信息
-        $info = getimagesize($source);
-        if (false === $info || (IMAGETYPE_GIF === $info[2] && empty($info['bits']))) {
-            throw new ImageException('非法水印文件');
-        }
-        //创建水印图像资源
-        $fun   = 'imagecreatefrom' . image_type_to_extension($info[2], false);
-        $water = $fun($source);
         //设定水印图像的混色模式
         imagealphablending($water, true);
         /* 设定水印位置 */
