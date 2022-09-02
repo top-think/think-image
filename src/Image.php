@@ -343,12 +343,12 @@ class Image
                     $scale = min($width / $w, $height / $h);
                 }
                 //设置缩略图的坐标及宽度和高度
-                $neww = $w * $scale;
-                $newh = $h * $scale;
+                $neww = intval($w * $scale);
+                $newh = intval($h * $scale);
                 $x    = $this->info['width'] - $w;
                 $y    = $this->info['height'] - $h;
-                $posx = ($width - $w * $scale) / 2;
-                $posy = ($height - $h * $scale) / 2;
+                $posx = intval(($width - $w * $scale) / 2);
+                $posy = intval(($height - $h * $scale) / 2);
                 do {
                     //创建新图像
                     $img = imagecreatetruecolor($width, $height);
