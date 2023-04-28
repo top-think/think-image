@@ -328,18 +328,18 @@ class Image
                 $scale = min($width / $w, $height / $h);
                 //设置缩略图的坐标及宽度和高度
                 $x      = $y      = 0;
-                $width  = $w * $scale;
-                $height = $h * $scale;
+                $width  = (int) ($w * $scale);
+                $height = (int) ($h * $scale);
                 break;
             /* 居中裁剪 */
             case self::THUMB_CENTER:
                 //计算缩放比例
                 $scale = max($width / $w, $height / $h);
                 //设置缩略图的坐标及宽度和高度
-                $w = $width / $scale;
-                $h = $height / $scale;
-                $x = ($this->info['width'] - $w) / 2;
-                $y = ($this->info['height'] - $h) / 2;
+                $w = (int) ($width / $scale);
+                $h = (int) ($height / $scale);
+                $x = (int) (($this->info['width'] - $w) / 2);
+                $y = (int) (($this->info['height'] - $h) / 2);
                 break;
             /* 左上角裁剪 */
             case self::THUMB_NORTHWEST:
@@ -347,18 +347,18 @@ class Image
                 $scale = max($width / $w, $height / $h);
                 //设置缩略图的坐标及宽度和高度
                 $x = $y = 0;
-                $w = $width / $scale;
-                $h = $height / $scale;
+                $w = (int) ($width / $scale);
+                $h = (int) ($height / $scale);
                 break;
             /* 右下角裁剪 */
             case self::THUMB_SOUTHEAST:
                 //计算缩放比例
                 $scale = max($width / $w, $height / $h);
                 //设置缩略图的坐标及宽度和高度
-                $w = $width / $scale;
-                $h = $height / $scale;
-                $x = $this->info['width'] - $w;
-                $y = $this->info['height'] - $h;
+                $w = (int) ($width / $scale);
+                $h = (int) ($height / $scale);
+                $x = (int) ($this->info['width'] - $w);
+                $y = (int) ($this->info['height'] - $h);
                 break;
             /* 填充 */
             case self::THUMB_FILLED:
@@ -369,12 +369,12 @@ class Image
                     $scale = min($width / $w, $height / $h);
                 }
                 //设置缩略图的坐标及宽度和高度
-                $neww = intval($w * $scale);
-                $newh = intval($h * $scale);
+                $neww = (int) ($w * $scale);
+                $newh = (int) ($h * $scale);
                 $x    = $this->info['width'] - $w;
                 $y    = $this->info['height'] - $h;
-                $posx = intval(($width - $w * $scale) / 2);
-                $posy = intval(($height - $h * $scale) / 2);
+                $posx = (int)(($width - $w * $scale) / 2);
+                $posy = (int)(($height - $h * $scale) / 2);
                 do {
                     //创建新图像
                     $img = imagecreatetruecolor($width, $height);
