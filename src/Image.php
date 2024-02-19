@@ -285,6 +285,7 @@ class Image
         //设置保存尺寸
         empty($width) && $width   = $w;
         empty($height) && $height = $h;
+        //php 8.x精度修复
         do {
             //创建新图像
             $img = imagecreatetruecolor($width, $height);
@@ -292,9 +293,8 @@ class Image
             $color = imagecolorallocate($img, 255, 255, 255);
             imagefill($img, 0, 0, $color);
             //裁剪
-            imagecopyresampled($img, $this->im, 0, 0, $x, $y, $width, $height, $w, $h);
+            imagecopyresampled($img, $this->im, intval($posx), intval($posy), intval($x), intval($y), intval($neww), intval($newh), intval($w), intval($h));
             imagedestroy($this->im); //销毁原图
-            //设置新图像
             $this->im = $img;
         } while (!empty($this->gif) && $this->gifNext());
         $this->info['width']  = (int) $width;
