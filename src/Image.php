@@ -146,10 +146,9 @@ class Image
      */
     public function output()
     {
-        $type =$this->info['type'] ;
+        $type = $this->info['type'];
         header("content-type: image/{$type}");
-        switch ($type)
-        {
+        switch ($type) {
             case 'png':
                 imagepng($this->im);
                 break;
@@ -283,16 +282,17 @@ class Image
     public function crop($w, $h, $x = 0, $y = 0, $width = null, $height = null)
     {
         //设置保存尺寸
+
         empty($width) && $width   = $w;
         empty($height) && $height = $h;
         do {
             //创建新图像
-            $img = imagecreatetruecolor($width, $height);
+            $img = imagecreatetruecolor((int) $width, (int) $height);
             // 调整默认颜色
             $color = imagecolorallocate($img, 255, 255, 255);
             imagefill($img, 0, 0, $color);
             //裁剪
-            imagecopyresampled($img, $this->im, 0, 0, $x, $y, $width, $height, $w, $h);
+            imagecopyresampled($img, $this->im, 0, 0, (int) $x, (int) $y, (int) $width, (int) $height, $w, $h);
             imagedestroy($this->im); //销毁原图
             //设置新图像
             $this->im = $img;
@@ -373,8 +373,8 @@ class Image
                 $newh = (int) ($h * $scale);
                 $x    = $this->info['width'] - $w;
                 $y    = $this->info['height'] - $h;
-                $posx = (int)(($width - $w * $scale) / 2);
-                $posy = (int)(($height - $h * $scale) / 2);
+                $posx = (int) (($width - $w * $scale) / 2);
+                $posy = (int) (($height - $h * $scale) / 2);
                 do {
                     //创建新图像
                     $img = imagecreatetruecolor($width, $height);
@@ -483,9 +483,9 @@ class Image
             // 调整默认颜色
             $color = imagecolorallocate($src, 255, 255, 255);
             imagefill($src, 0, 0, $color);
-            imagecopy($src, $this->im, 0, 0, $x, $y, $info[0], $info[1]);
+            imagecopy($src, $this->im, 0, 0, (int) $x, (int) $y, $info[0], $info[1]);
             imagecopy($src, $water, 0, 0, 0, 0, $info[0], $info[1]);
-            imagecopymerge($this->im, $src, $x, $y, 0, 0, $info[0], $info[1], $alpha);
+            imagecopymerge($this->im, $src, (int) $x, (int) $y, 0, 0, $info[0], $info[1], $alpha);
             //销毁临时图片资源
             imagedestroy($src);
         } while (!empty($this->gif) && $this->gifNext());
@@ -586,15 +586,17 @@ class Image
             $ox     = $oy     = $offset;
         }
         /* 图片黑白检测 */
-        if ($color == "auto") {
+        if ("auto" == $color) {
             //X方向采集宽度：单英文字符占据宽度约为字体大小/1.6，单中文字符占据宽度约为字体大小*4/3；Y方向采集宽度：英文字符高度约为字体大小，中文会高一些。
             //使用保守宽度，以免在纯英文情况下采集区域超出图像范围，并且精度完全可以满足本功能。
             $pickX = intval(mb_strwidth($text) * ($size / 1.6));
             $pickY = $size;
 
             $brightness = 0;
-            for ($i = $x + $ox; $i < $pickX + $x + $ox; $i++) { //根据文字基线确定要进行遍历的像素
-                for ($j = $y + $oy - $pickY; $j < $y + $oy; $j++) { //基线修正
+            for ($i = $x + $ox; $i < $pickX + $x + $ox; $i++) {
+                //根据文字基线确定要进行遍历的像素
+                for ($j = $y + $oy - $pickY; $j < $y + $oy; $j++) {
+                    //基线修正
                     $brightness += self::getBrightnessOfPixel($i, $j);
                 }
             }
@@ -625,9 +627,9 @@ class Image
     private function getBrightnessOfPixel($x, $y)
     {
         $rgb = imagecolorat($this->im, $x, $y);
-        $r = ($rgb >> 16) & 0xFF;
-        $g = ($rgb >> 8) & 0xFF;
-        $b = $rgb & 0xFF;
+        $r   = ($rgb >> 16) & 0xFF;
+        $g   = ($rgb >> 8) & 0xFF;
+        $b   = $rgb & 0xFF;
 
         //红绿蓝能量不同，亮度不同，对应系数也不同（参考https://www.w3.org/TR/AERT/#color-contrast）
         $brightness = intval($r * 0.299 + $g * 0.587 + $b * 0.114);
